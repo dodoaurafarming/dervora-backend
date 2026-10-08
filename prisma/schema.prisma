@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  logoUrl     String?   @map("logo_url") @db.VarChar(500)
+  country     String?   @db.VarChar(100)
+  website     String?   @db.VarChar(500)
+  reputation  String?   @db.Text
+  products    Product[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@index([deletedAt])
+  @@map("brands")
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique @db.VarChar(100)
+  description String?   @db.Text
+  iconUrl     String?   @map("icon_url") @db.VarChar(500)
+  products    Product[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("categories")
+}
+
+model Product {
+  id           Int       @id @default(autoincrement())
+  name         String    @db.VarChar(255)
+  brandId      Int       @map("brand_id")
+  categoryId   Int?      @map("category_id")
+  description  String?   @db.Text
+  price        Int?
+  imageUrl     String?   @map("image_url") @db.VarChar(500)
+  bpom         String?   @db.VarChar(100)
+  size         String?   @db.VarChar(50)
+  halal        Boolean?
+  rating       Float?
+  reviewCount  Int?      @map("review_count")
+  howToUse     String?   @map("how_to_use") @db.Text
+  notes        String?   @db.Text
+  skinTypes    Json?     @map("skin_types")
+  concerns     Json?
+  brand        Brand     @relation(fields: [brandId], references: [id])
+  category     Category? @relation(fields: [categoryId], references: [id])
+  ingredients  ProductIngredient[]
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  @@unique([name, brandId])
+  @@index([deletedAt])
+  @@index([brandId])
+  @@index([categoryId])
+  @@index([name])
+  @@map("products")
+}
+
+model Ingredient {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique @db.VarChar(255)
+  function     String?   @db.Text
+  description  String?   @db.Text
+  suitableSkin Json?     @map("suitable_skin")
+  concerns     Json?
+  photoUrl     String?   @map("photo_url") @db.VarChar(500)
+  sourceLink   String?   @map("source_link") @db.VarChar(500)
+  products     ProductIngredient[]
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@map("ingredients")
+}
+
+model ProductIngredient {
+  productId    Int @map("product_id")
+  ingredientId Int @map("ingredient_id")
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@id([productId, ingredientId])
+  @@map("product_ingredients")
+}
