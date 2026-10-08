@@ -2,8 +2,8 @@ import type { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { sendSuccess } from '../utils/response.js';
 import { AppError } from '../middlewares/errorHandler.js';
-import { parseId } from '../utils/parseId.js'
 import type { CreateBrandInput, UpdateBrandInput } from '../schemas/brand.schema.js';
+import { parseId } from '../utils/parseId.js';
 
 export async function listBrands(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -30,7 +30,7 @@ export async function listBrands(req: Request, res: Response, next: NextFunction
 
 export async function getBrand(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseId(req.params.id);
     const brand = await prisma.brand.findFirst({
       where: { id, deletedAt: null },
       include: { products: { where: { deletedAt: null }, take: 10 } },
@@ -57,7 +57,7 @@ export async function createBrand(req: Request, res: Response, next: NextFunctio
 
 export async function updateBrand(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseId(req.params.id);
     const body = req.body as UpdateBrandInput;
 
     const existing = await prisma.brand.findFirst({ where: { id, deletedAt: null } });
@@ -72,7 +72,7 @@ export async function updateBrand(req: Request, res: Response, next: NextFunctio
 
 export async function deleteBrand(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseId(req.params.id);
     const existing = await prisma.brand.findFirst({ where: { id, deletedAt: null } });
     if (!existing) throw new AppError('NOT_FOUND', 'Brand not found', 404);
 
