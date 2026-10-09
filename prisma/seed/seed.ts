@@ -96,6 +96,13 @@ async function main() {
       suitableSkin: ['All'],
       concerns: ['Dryness', 'Sensitivity'],
     },
+    {
+  name: 'Hyaluronic Acid',
+  function: 'Menarik dan mengikat kelembapan',
+  description: 'Molekul gula besar (polisakarida) yang alami di kulit.',
+  suitableSkin: ['All'],
+  concerns: ['Dryness', 'Dehydration'],
+},
   ];
 
   const ingredients = await Promise.all(
