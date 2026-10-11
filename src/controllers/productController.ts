@@ -3,7 +3,7 @@ import { prisma } from '../lib/prisma.js';
 import { sendSuccess } from '../utils/response.js';
 import { AppError } from '../middlewares/errorHandler.js';
 import type { CreateProductInput, UpdateProductInput } from '../schemas/product.schema.js';
-import { deleteImage } from '../lib/cloudinary.js';  // ← TAMBAH IMPORT
+import { deleteImage } from '../lib/cloudinary.js';
 import { parseId } from '../utils/parseId.js';
 
 export async function listProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -121,8 +121,6 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
     next(err);
   }
 }
-
-import { deleteImage } from '../lib/cloudinary.js';  // ← TAMBAH IMPORT
 
 export async function deleteProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
