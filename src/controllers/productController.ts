@@ -3,6 +3,7 @@ import { prisma } from '../lib/prisma.js';
 import { sendSuccess } from '../utils/response.js';
 import { AppError } from '../middlewares/errorHandler.js';
 import type { CreateProductInput, UpdateProductInput } from '../schemas/product.schema.js';
+import { deleteImage } from '../lib/cloudinary.js';  // ← TAMBAH IMPORT
 import { parseId } from '../utils/parseId.js';
 
 export async function listProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -121,16 +122,31 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
   }
 }
 
+import { deleteImage } from '../lib/cloudinary.js';  // ← TAMBAH IMPORT
+
 export async function deleteProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const id = parseId(req.params.id);
     const existing = await prisma.product.findFirst({ where: { id, deletedAt: null } });
     if (!existing) throw new AppError('NOT_FOUND', 'Product not found', 404);
 
+    // Soft delete
     await prisma.product.update({
       where: { id },
       data: { deletedAt: new Date() },
     });
+
+    // Optional: Hapus gambar dari Cloudinary
+    if (existing.imagePublicId) {
+      try {
+        await deleteImage(existing.imagePublicId);
+        console.log(`✅ Deleted image from Cloudinary: ${existing.imagePublicId}`);
+      } catch (err) {
+        console.warn(`⚠️  Failed to delete image from Cloudinary:`, err);
+        // Jangan throw — soft delete tetap berhasil
+      }
+    }
+
     sendSuccess(res, { id, deleted: true });
   } catch (err) {
     next(err);

@@ -7,6 +7,7 @@ export const createProductSchema = z.object({
   description: z.string().optional(),
   price: z.number().int().positive().optional(),
   imageUrl: z.string().url().max(500).optional(),
+  imagePublicId: z.string().max(255).optional(),  // ← BARU
   bpom: z.string().max(100).optional(),
   size: z.string().max(50).optional(),
   halal: z.boolean().optional(),
