@@ -69,17 +69,18 @@ model Product {
 }
 
 model Ingredient {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique @db.VarChar(255)
-  function     String?   @db.Text
-  description  String?   @db.Text
-  suitableSkin Json?     @map("suitable_skin")
-  concerns     Json?
-  photoUrl     String?   @map("photo_url") @db.VarChar(500)
-  sourceLink   String?   @map("source_link") @db.VarChar(500)
-  products     ProductIngredient[]
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  id             Int       @id @default(autoincrement())
+  name           String    @unique @db.VarChar(255)
+  function       String?   @db.Text
+  description    String?   @db.Text
+  suitableSkin   Json?     @map("suitable_skin")
+  concerns       Json?
+  photoUrl       String?   @map("photo_url") @db.VarChar(500)
+  photoPublicId  String?   @map("photo_public_id") @db.VarChar(255)
+  sourceLink     String?   @map("source_link") @db.VarChar(500)
+  products       ProductIngredient[]
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
   @@map("ingredients")
 }
