@@ -28,3 +28,28 @@ export async function uploadProductImage(
     next(err);
   }
 }
+
+/**
+ * POST /api/admin/upload/ingredient
+ * Upload single ingredient image to Cloudinary.
+ */
+export async function uploadIngredientImage(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    if (!req.file) {
+      throw new AppError('VALIDATION_ERROR', 'No file uploaded. Use field name "image".', 400);
+    }
+
+    const { url, publicId } = await uploadImage(req.file.buffer, 'dervora/ingredients');
+
+    sendSuccess(res, {
+      url,
+      publicId,
+    });
+  } catch (err) {
+    next(err);
+  }
+}

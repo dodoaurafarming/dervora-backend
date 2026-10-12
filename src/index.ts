@@ -8,6 +8,7 @@ import ingredientRoutes from './routes/ingredientRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import adminIngredientRoutes from './routes/adminIngredientRoutes.js';
 import { notFoundHandler, globalErrorHandler } from './middlewares/errorHandler.js';
 
 dotenv.config();
@@ -58,6 +59,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/ingredients', ingredientRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin', uploadRoutes);
+app.use('/api/admin/ingredients', adminIngredientRoutes);
 app.use('/api/auth', authRoutes);  // ← BARU
 
 // Error handlers
