@@ -5,3 +5,7 @@ dist/
 *.log
 .DS_Store
 .railway/
+# Import Scripts Data & Logs
+scripts/backups/
+scripts/import-logs/
+data/
