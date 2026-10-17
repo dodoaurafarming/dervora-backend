@@ -6,6 +6,21 @@ import type { CreateProductInput, UpdateProductInput } from '../schemas/product.
 import { deleteImage } from '../lib/cloudinary.js';
 import { parseId } from '../utils/parseId.js';
 
+// Reusable include untuk product (dengan catalog di ingredient)
+const productInclude = {
+  brand: true,
+  category: true,
+  ingredients: {
+    include: {
+      ingredient: {
+        include: {
+          catalog: true,    // ← TAMBAHAN: include catalog
+        },
+      },
+    },
+  },
+} as const;
+
 export async function listProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const page = Math.max(1, parseInt((req.query.page as string) || '1', 10) || 1);
@@ -25,11 +40,7 @@ export async function listProducts(req: Request, res: Response, next: NextFuncti
         where,
         skip,
         take: limit,
-        include: {
-          brand: true,
-          category: true,
-          ingredients: { include: { ingredient: true } },
-        },
+        include: productInclude,    // ← pakai reusable include
         orderBy: { createdAt: 'desc' },
       }),
       prisma.product.count({ where }),
@@ -51,11 +62,7 @@ export async function getProduct(req: Request, res: Response, next: NextFunction
     const id = parseId(req.params.id);
     const product = await prisma.product.findFirst({
       where: { id, deletedAt: null },
-      include: {
-        brand: true,
-        category: true,
-        ingredients: { include: { ingredient: true } },
-      },
+      include: productInclude,    // ← pakai reusable include
     });
     if (!product) throw new AppError('NOT_FOUND', 'Product not found', 404);
     sendSuccess(res, product);
@@ -78,11 +85,7 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
             }
           : undefined,
       },
-      include: {
-        brand: true,
-        category: true,
-        ingredients: { include: { ingredient: true } },
-      },
+      include: productInclude,    // ← pakai reusable include
     });
     sendSuccess(res, product, null, 201);
   } catch (err) {
@@ -110,11 +113,7 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
           },
         }),
       },
-      include: {
-        brand: true,
-        category: true,
-        ingredients: { include: { ingredient: true } },
-      },
+      include: productInclude,    // ← pakai reusable include
     });
     sendSuccess(res, product);
   } catch (err) {
