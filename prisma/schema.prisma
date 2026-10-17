@@ -69,20 +69,51 @@ model Product {
 }
 
 model Ingredient {
-  id             Int       @id @default(autoincrement())
-  name           String    @unique @db.VarChar(255)
-  function       String?   @db.Text
-  description    String?   @db.Text
-  suitableSkin   Json?     @map("suitable_skin")
-  concerns       Json?
-  photoUrl       String?   @map("photo_url") @db.VarChar(500)
-  photoPublicId  String?   @map("photo_public_id") @db.VarChar(255)
-  sourceLink     String?   @map("source_link") @db.VarChar(500)
-  products       ProductIngredient[]
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
-
+  id               Int          @id @default(autoincrement())
+  name             String       @unique @db.VarChar(255)
+  function         String?      @db.Text
+  description      String?      @db.Text
+  suitableSkin     Json?        @map("suitable_skin")
+  concerns         Json?
+  photoUrl         String?      @map("photo_url") @db.VarChar(500)
+  sourceLink       String?      @map("source_link") @db.VarChar(500)
+  
+  // RELASI BARU — link ke catalog
+  catalogId        Int?         @map("catalog_id")
+  catalog          IngredientCatalog? @relation(fields: [catalogId], references: [id])
+  
+  productIngredients ProductIngredient[]
+  
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  deletedAt        DateTime?    @map("deleted_at")
+  
   @@map("ingredients")
+}
+
+// ============================================================
+// INGREDIENT CATALOG (Tabel Baru - Untuk Tampilan User-Facing)
+// ============================================================
+model IngredientCatalog {
+  id               Int          @id @default(autoincrement())
+  name             String       @unique @db.VarChar(255)
+  photoUrl         String?      @map("photo_url") @db.VarChar(500)
+  description      String?      @db.Text
+  sourceLink       String?      @map("source_link") @db.VarChar(500)
+  commonUses       Json?        @map("common_uses")          
+  allergyPotential String?      @map("allergy_potential") @db.Text
+  skinTypeSummary  String?      @map("skin_type_summary") @db.Text
+  riskBenefit      String?      @map("risk_benefit") @db.Text
+  category         String?      @db.VarChar(100)             
+  isActive         Boolean      @default(true) @map("is_active")
+  
+  // Relasi ke ingredient (technical)
+  ingredients      Ingredient[]
+  
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  
+  @@map("ingredient_catalog")
 }
 
 model ProductIngredient {
