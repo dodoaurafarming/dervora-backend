@@ -30,7 +30,7 @@ export async function adminListIngredients(
         skip,
         take: limit,
         include: {
-          _count: { select: { products: true } },
+          _count: { select: { productIngredients: true } },  // ← FIX: products → productIngredients
         },
         orderBy: { name: 'asc' },
       }),
@@ -61,7 +61,7 @@ export async function adminGetIngredient(
     const ingredient = await prisma.ingredient.findUnique({
       where: { id },
       include: {
-        products: {
+        productIngredients: {  // ← FIX: products → productIngredients
           include: {
             product: { select: { id: true, name: true, imageUrl: true } },
           },

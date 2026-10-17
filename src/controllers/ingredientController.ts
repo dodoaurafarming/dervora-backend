@@ -8,7 +8,7 @@ export async function listIngredients(req: Request, res: Response, next: NextFun
   try {
     const ingredients = await prisma.ingredient.findMany({
       orderBy: { name: 'asc' },
-      include: { _count: { select: { products: true } } },
+      include: { _count: { select: { productIngredients: true } } },  // ← FIX: products → productIngredients
     });
     sendSuccess(res, ingredients);
   } catch (err) {
@@ -22,7 +22,7 @@ export async function getIngredient(req: Request, res: Response, next: NextFunct
     const ingredient = await prisma.ingredient.findUnique({
       where: { id },
       include: {
-        products: {
+        productIngredients: {  // ← FIX: products → productIngredients
           include: { product: { select: { id: true, name: true, imageUrl: true } } },
         },
       },
