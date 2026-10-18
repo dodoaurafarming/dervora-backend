@@ -16,7 +16,10 @@
   "import:csv": "tsx src/scripts/importCsv.ts",
   "export:ingredients": "tsx src/scripts/export-ingredients.ts",
   "import:catalog": "tsx src/scripts/import-catalog.ts",
+  "export:products": "tsx src/scripts/export-products.ts",
   "cleanup:ingredients": "tsx src/scripts/cleanup-ingredients.ts",
+  "import:generated": "tsx src/scripts/import-generated-products.ts",
+  "update:concerns": "tsx src/scripts/update-concerns.ts",
   "link:catalog": "tsx src/scripts/link-catalog.ts"
 },
   "prisma": {
