@@ -24,7 +24,7 @@ const productInclude = {
 export async function listProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const page = Math.max(1, parseInt((req.query.page as string) || '1', 10) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt((req.query.limit as string) || '10', 10) || 10));
+    const limit = Math.min(1000, Math.max(1, parseInt((req.query.limit as string) || '10', 10) || 10));
     const search = (req.query.search as string) || '';
     const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
     const skip = (page - 1) * limit;
