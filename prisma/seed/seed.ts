@@ -13,8 +13,8 @@ async function main() {
     { name: 'Hanasui', country: 'Indonesia', website: 'https://hanasui.id' },
     { name: 'Glad2Glow', country: 'Indonesia', website: 'https://glad2glow.com' },
     { name: 'Whitelab', country: 'Indonesia', website: 'https://www.whitelab.co.id' },
-{ name: 'Somethinc', country: 'Indonesia', website: 'https://somethinc.com' },
-{ name: 'Avoskin', country: 'Indonesia', website: 'https://www.avoskinbeauty.com' },
+    { name: 'Somethinc', country: 'Indonesia', website: 'https://somethinc.com' },
+    { name: 'Avoskin', country: 'Indonesia', website: 'https://www.avoskinbeauty.com' },
   ];
 
   const brands = await Promise.all(
@@ -53,6 +53,7 @@ async function main() {
   console.log(`✅ ${categories.length} categories di-seed`);
 
   // ==================== INGREDIENTS ====================
+  // FIX: Hyaluronic Acid hanya ditulis sekali
   const ingredientsData = [
     {
       name: 'Niacinamide',
@@ -71,7 +72,7 @@ async function main() {
     {
       name: 'Hyaluronic Acid',
       function: 'Menarik dan mengikat kelembapan',
-      description: 'Molekul gula besar (polisakarida).',
+      description: 'Molekul gula besar (polisakarida) yang alami di kulit.',
       suitableSkin: ['All'],
       concerns: ['Dryness', 'Dehydration'],
     },
@@ -96,13 +97,6 @@ async function main() {
       suitableSkin: ['All'],
       concerns: ['Dryness', 'Sensitivity'],
     },
-    {
-  name: 'Hyaluronic Acid',
-  function: 'Menarik dan mengikat kelembapan',
-  description: 'Molekul gula besar (polisakarida) yang alami di kulit.',
-  suitableSkin: ['All'],
-  concerns: ['Dryness', 'Dehydration'],
-},
   ];
 
   const ingredients = await Promise.all(
@@ -179,65 +173,65 @@ async function main() {
       concerns: ['Redness', 'Sensitivity'],
     },
     {
-  name: 'Whitelab Cera-Mug Barrier Moisturizing Gel',
-  brandName: 'Whitelab',
-  categoryName: 'Moisturizer',
-  description: 'Moisturizer gel ringan dengan Ceramide dan Mugwort untuk kulit sensitif.',
-  price: 84000,
-  imageUrl: 'https://www.whitelab.co.id/img/product/cera-mug.jpg',
-  bpom: 'NA18210109052',
-  ingredientNames: ['Ceramide', 'Centella Asiatica', 'Hyaluronic Acid'],
-  skinTypes: ['All', 'Sensitive'],
-  concerns: ['Dryness', 'Redness'],
-},
-{
-  name: 'Somethinc Calm Down Skinpair Barrier Serum',
-  brandName: 'Somethinc',
-  categoryName: 'Serum',
-  description: 'Serum penenang kulit sensitif dengan Centella dan Peptide.',
-  price: 124000,
-  imageUrl: 'https://images.somethinc.com/uploads/products/calm-down-serum.jpg',
-  bpom: 'NA18230102015',
-  ingredientNames: ['Centella Asiatica', 'Panthenol'],
-  skinTypes: ['Sensitive', 'All'],
-  concerns: ['Redness', 'Irritation'],
-},
-{
-  name: 'Avoskin Your Skin Bae Niacinamide Serum',
-  brandName: 'Avoskin',
-  categoryName: 'Serum',
-  description: 'Serum pencerah dengan Niacinamide 12% untuk menyamarkan noda.',
-  price: 113500,
-  imageUrl: 'https://avoskin-2023.s3.ap-southeast-3.amazonaws.com/product-image/niacinamide.jpg',
-  bpom: 'NA18212000457',
-  ingredientNames: ['Niacinamide', 'Centella Asiatica'],
-  skinTypes: ['All', 'Combination'],
-  concerns: ['Dullness', 'Dark spots'],
-},
-{
-  name: 'Azarine Hydrasoothe Sunscreen Gel SPF 45',
-  brandName: 'Azarine',
-  categoryName: 'Sunscreen',
-  description: 'Tabir surya gel yang melembapkan dan menenangkan.',
-  price: 49000,
-  imageUrl: 'https://medias.watsons.co.id/publishing/WTCID-43670-front-zoom.jpg',
-  bpom: 'NA18211700231',
-  ingredientNames: ['Hyaluronic Acid', 'Centella Asiatica'],
-  skinTypes: ['All', 'Oily'],
-  concerns: ['Sun protection', 'Dryness'],
-},
-{
-  name: 'Hanasui Power Serum Barrier Serum',
-  brandName: 'Hanasui',
-  categoryName: 'Serum',
-  description: 'Serum dengan Hyaluron 11 Complex dan Ceramide untuk hidrasi maksimal.',
-  price: 58000,
-  imageUrl: 'https://down-id.img.susercontent.com/file/hanasui-barrier.jpg',
-  bpom: 'NA18220104002',
-  ingredientNames: ['Hyaluronic Acid', 'Ceramide', 'Niacinamide'],
-  skinTypes: ['All', 'Dry'],
-  concerns: ['Dryness', 'Sensitivity'],
-},
+      name: 'Whitelab Cera-Mug Barrier Moisturizing Gel',
+      brandName: 'Whitelab',
+      categoryName: 'Moisturizer',
+      description: 'Moisturizer gel ringan dengan Ceramide dan Mugwort untuk kulit sensitif.',
+      price: 84000,
+      imageUrl: 'https://www.whitelab.co.id/img/product/cera-mug.jpg',
+      bpom: 'NA18210109052',
+      ingredientNames: ['Ceramide', 'Centella Asiatica', 'Hyaluronic Acid'],
+      skinTypes: ['All', 'Sensitive'],
+      concerns: ['Dryness', 'Redness'],
+    },
+    {
+      name: 'Somethinc Calm Down Skinpair Barrier Serum',
+      brandName: 'Somethinc',
+      categoryName: 'Serum',
+      description: 'Serum penenang kulit sensitif dengan Centella dan Peptide.',
+      price: 124000,
+      imageUrl: 'https://images.somethinc.com/uploads/products/calm-down-serum.jpg',
+      bpom: 'NA18230102015',
+      ingredientNames: ['Centella Asiatica', 'Panthenol'],
+      skinTypes: ['Sensitive', 'All'],
+      concerns: ['Redness', 'Irritation'],
+    },
+    {
+      name: 'Avoskin Your Skin Bae Niacinamide Serum',
+      brandName: 'Avoskin',
+      categoryName: 'Serum',
+      description: 'Serum pencerah dengan Niacinamide 12% untuk menyamarkan noda.',
+      price: 113500,
+      imageUrl: 'https://avoskin-2023.s3.ap-southeast-3.amazonaws.com/product-image/niacinamide.jpg',
+      bpom: 'NA18212000457',
+      ingredientNames: ['Niacinamide', 'Centella Asiatica'],
+      skinTypes: ['All', 'Combination'],
+      concerns: ['Dullness', 'Dark spots'],
+    },
+    {
+      name: 'Azarine Hydrasoothe Sunscreen Gel SPF 45',
+      brandName: 'Azarine',
+      categoryName: 'Sunscreen',
+      description: 'Tabir surya gel yang melembapkan dan menenangkan.',
+      price: 49000,
+      imageUrl: 'https://medias.watsons.co.id/publishing/WTCID-43670-front-zoom.jpg',
+      bpom: 'NA18211700231',
+      ingredientNames: ['Hyaluronic Acid', 'Centella Asiatica'],
+      skinTypes: ['All', 'Oily'],
+      concerns: ['Sun protection', 'Dryness'],
+    },
+    {
+      name: 'Hanasui Power Serum Barrier Serum',
+      brandName: 'Hanasui',
+      categoryName: 'Serum',
+      description: 'Serum dengan Hyaluron 11 Complex dan Ceramide untuk hidrasi maksimal.',
+      price: 58000,
+      imageUrl: 'https://down-id.img.susercontent.com/file/hanasui-barrier.jpg',
+      bpom: 'NA18220104002',
+      ingredientNames: ['Hyaluronic Acid', 'Ceramide', 'Niacinamide'],
+      skinTypes: ['All', 'Dry'],
+      concerns: ['Dryness', 'Sensitivity'],
+    },
   ];
 
   for (const p of productsData) {
@@ -245,8 +239,16 @@ async function main() {
     const category = categories.find((c) => c.name === p.categoryName);
     if (!brand || !category) continue;
 
-    const product = await prisma.product.create({
-      data: {
+    // Menggunakan upsert agar jika produk sudah ada (karena import CSV), tidak error
+    const product = await prisma.product.upsert({
+      where: {
+        name_brandId: {
+          name: p.name,
+          brandId: brand.id,
+        },
+      },
+      update: {},
+      create: {
         name: p.name,
         brandId: brand.id,
         categoryId: category.id,

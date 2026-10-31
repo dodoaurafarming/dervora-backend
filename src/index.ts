@@ -16,7 +16,6 @@ import { notFoundHandler, globalErrorHandler } from './middlewares/errorHandler.
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // CORS
 const allowedOrigins = [
@@ -40,7 +39,7 @@ app.use(
 
 app.use(express.json());
 
-// Health check
+// Health check (Khusus untuk Vercel)
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -62,7 +61,7 @@ app.use('/api/ingredients', ingredientRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin', uploadRoutes);
 app.use('/api/admin/ingredients', adminIngredientRoutes);
-app.use('/api/auth', authRoutes);  // ← BARU
+app.use('/api/auth', authRoutes);
 app.use('/api/admin/ingredient-catalog', adminIngredientCatalogRoutes);
 app.use('/api/ingredient-catalog', ingredientCatalogRoutes);
 
@@ -70,7 +69,14 @@ app.use('/api/ingredient-catalog', ingredientCatalogRoutes);
 app.use(notFoundHandler);
 app.use(globalErrorHandler);
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`🌐 CORS allowed origins:`, allowedOrigins);
-});
+// JIKA DIJALANKAN DI LOKAL (npm run dev)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`🌐 CORS allowed origins:`, allowedOrigins);
+  });
+}
+
+// EKSPOR UNTUK VERCEL
+export default app;
