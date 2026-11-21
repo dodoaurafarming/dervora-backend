@@ -23,7 +23,8 @@
     "merge:products": "tsx src/scripts/merge-products.ts"
   },
   "prisma": {
-    "seed": "tsx prisma/seed/seed.ts"
+    "schema": "prisma/schema.prisma",
+     "seed": "tsx prisma/seed.ts"
   },
   "keywords": [
     "dervora",
