@@ -80,12 +80,10 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
       data: {
         ...productData,
         ingredients: ingredientIds
-          ? {
-              create: ingredientIds.map((id) => ({ ingredientId: id })),
-            }
+          ? { create: ingredientIds.map((id) => ({ ingredientId: id })) }
           : undefined,
       },
-      include: productInclude,    // ← pakai reusable include
+      include: productInclude,
     });
     sendSuccess(res, product, null, 201);
   } catch (err) {

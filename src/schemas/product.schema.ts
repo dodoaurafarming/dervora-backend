@@ -7,7 +7,7 @@ export const createProductSchema = z.object({
   description: z.string().optional(),
   price: z.number().int().positive().optional(),
   imageUrl: z.string().url().max(500).optional(),
-  imagePublicId: z.string().max(255).optional(),  // ← BARU
+  imagePublicId: z.string().max(255).optional(),
   bpom: z.string().max(100).optional(),
   size: z.string().max(50).optional(),
   halal: z.boolean().optional(),
@@ -18,6 +18,10 @@ export const createProductSchema = z.object({
   skinTypes: z.array(z.string()).optional(),
   concerns: z.array(z.string()).optional(),
   ingredientIds: z.array(z.number().int().positive()).optional(),
+  
+  // 👇 TAMBAHKAN BARIS INI 👇
+  // .or(z.literal("")) digunakan agar form yang mengirim string kosong ("") tidak error validasi
+  buyLink: z.string().url("Format URL tidak valid").optional().or(z.literal("")), 
 });
 
 export const updateProductSchema = createProductSchema.partial();

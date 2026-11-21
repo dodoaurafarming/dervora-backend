@@ -17,6 +17,8 @@ async function main() {
   const dataDir = path.join(process.cwd(), 'data');
   let allRecords: any[] = [];
 
+  console.log('📂 Mulai membaca file CSV...\n');
+
   // 1. Baca dan gabungkan semua file CSV
   for (const file of files) {
     const filePath = path.join(dataDir, file);
@@ -30,61 +32,93 @@ async function main() {
       allRecords = allRecords.concat(records);
       console.log(`✅ Berhasil membaca ${records.length} baris dari ${file}`);
     } else {
-      console.warn(`⚠️ File tidak ditemukan: ${file}`);
+      console.warn(`⚠️ File tidak ditemukan: ${filePath}`);
     }
   }
 
   console.log(`\n📊 Total data yang akan diproses: ${allRecords.length} produk\n`);
 
+  // 2. VALIDASI PENTING: Pastikan ada minimal 1 Brand dan 1 Category di database
+  const defaultBrand = await prisma.brand.findFirst({ select: { id: true } });
+  const defaultCategory = await prisma.category.findFirst({ select: { id: true } });
+  
+  if (!defaultBrand || !defaultCategory) {
+    console.error('❌ GAGAL: Tabel "Brand" atau "Category" masih KOSONG di database!');
+    console.error('💡 SOLUSI:');
+    console.error('   1. Pastikan file .env Anda mengarah ke database yang BENAR (misal: database Production, bukan database "test" yang kosong).');
+    console.error('   2. Atau, tambahkan minimal 1 data Brand dan 1 data Category ke database terlebih dahulu melalui Admin Panel atau script seed.');
+    process.exit(1);
+  }
+  
+  const fallbackBrandId = defaultBrand.id;
+  const fallbackCategoryId = defaultCategory.id;
+  
+  console.log(`💡 Menggunakan fallback brandId: ${fallbackBrandId}, categoryId: ${fallbackCategoryId} untuk produk baru.\n`);
+
   let updatedCount = 0;
   let failedCount = 0;
 
-  // 2. Looping dan update ke database
+  // 3. Looping dan upsert (Update atau Create) ke database
   for (const row of allRecords) {
     const id = parseInt(row['ID'], 10);
     if (isNaN(id)) continue;
 
     try {
-      // Parse data dari CSV
       const rating = row['Rating'] ? parseFloat(row['Rating']) : null;
       const reviewCount = row['ReviewCount'] ? parseInt(row['ReviewCount'], 10) : null;
       
-      // SkinTypes dipisah dengan tanda '|', kita ubah jadi array
-      const skinTypes = row['SkinTypes'] ? row['SkinTypes'].split('|').map((s: string) => s.trim()) : null;
+      const skinTypesRaw = row['SkinTypes'] ? row['SkinTypes'].trim() : '';
+      const skinTypes = skinTypesRaw ? skinTypesRaw.split('|').map((s: string) => s.trim()) : undefined;
       
-      const howToUse = row['HowToUse'] || null;
-      const notes = row['Notes'] || null;
-      const size = row['Size'] || null;
-      const halal = row['Halal'] ? (row['Halal'].toLowerCase() === 'true') : true;
+      const howToUse = row['HowToUse'] ? row['HowToUse'].trim() : null;
+      const notes = row['Notes'] ? row['Notes'].trim() : null;
+      const size = row['Size'] ? row['Size'].trim() : null;
+      const halal = row['Halal'] ? (row['Halal'].trim().toLowerCase() === 'true') : true;
+      const name = row['Name'] ? row['Name'].trim() : `Product ${id}`;
 
-      await prisma.product.update({
+      await prisma.product.upsert({
         where: { id },
-        data: {
+        update: {
           rating,
           reviewCount,
-          skinTypes: skinTypes ? skinTypes : undefined,
+          skinTypes,
           howToUse,
           notes,
           size,
           halal,
         },
+        create: {
+          id,
+          name,
+          rating,
+          reviewCount,
+          skinTypes,
+          howToUse,
+          notes,
+          size,
+          halal,
+          // Field wajib untuk create (dipastikan bernilai number, bukan undefined)
+          brandId: fallbackBrandId,
+          categoryId: fallbackCategoryId,
+        },
       });
+
       updatedCount++;
       
       if (updatedCount % 50 === 0) {
-        console.log(`   📊 Progress: ${updatedCount}/${allRecords.length}`);
+        console.log(`   ⏳ Progress: ${updatedCount}/${allRecords.length} produk diproses...`);
       }
-    } catch (error) {
+    } catch (error: any) {
       failedCount++;
-      console.error(`   ❌ Gagal update ID ${id}:`, error);
+      console.error(`   ❌ Gagal memproses ID ${id}:`, error.message);
     }
   }
 
-  console.log('\n═══════════════════════════════════════════════');
-  console.log(`📊 SUMMARY`);
-  console.log(`   Berhasil diupdate: ${updatedCount}`);
-  console.log(`   Gagal: ${failedCount}`);
-  console.log('═══════════════════════════════════════════════\n');
+  console.log('\n═══════════════════════════════════════════════════════════');
+  console.log('📊 SUMMARY IMPORT DATA');
+  console.log(`   ✅ Berhasil diproses (Update/Create): ${updatedCount}`);
+  console.log(`   ❌ Gagal: ${failedCount}`);
+  console.log('═══════════════════════════════════════════════════════════\n');
 }
 
 main()
@@ -92,4 +126,6 @@ main()
     console.error('❌ Error fatal:', e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

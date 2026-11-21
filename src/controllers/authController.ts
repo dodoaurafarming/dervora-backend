@@ -1,9 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
-import { verifyPassword, generateToken } from '../lib/auth.js';
+import { verifyPassword, generateToken, type JWTPayload } from '../lib/auth.js'; // <-- TAMBAHKAN 'type JWTPayload' DI SINI
 import { sendSuccess } from '../utils/response.js';
 import { AppError } from '../middlewares/errorHandler.js';
 import type { LoginInput } from '../schemas/auth.schema.js';
-
 /**
  * POST /api/auth/login
  * Verify credentials, return JWT token.
@@ -59,9 +58,13 @@ export async function me(req: Request, res: Response, next: NextFunction): Promi
       throw new AppError('UNAUTHORIZED', 'Not authenticated', 401);
     }
 
+    // TYPE NARROWING: Karena middleware 'authenticate' hanya melewatkan JWTPayload,
+    // kita aman untuk meng-assert tipe ini agar TypeScript tidak error.
+    const adminUser = req.user as JWTPayload;
+
     sendSuccess(res, {
-      username: req.user.username,
-      role: req.user.role,
+      username: adminUser.username,
+      role: adminUser.role,
     });
   } catch (err) {
     next(err);
