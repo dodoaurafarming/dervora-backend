@@ -17,29 +17,41 @@ dotenv.config();
 
 const app = express();
 
-// CORS
+// ==========================================
+// 1. KONFIGURASI CORS (BULLETPROOF UNTUK VERCEL)
+// ==========================================
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
   'http://localhost:3000',
-  process.env.FRONTEND_URL || '',
+  'https://dodoaurafarming.github.io', // URL Production Frontend GitHub Pages
+  process.env.FRONTEND_URL || '',       // Fallback dari Environment Variable Vercel
 ].filter(Boolean);
 
 app.use(
   cors({
-    origin: (origin, callback) => {
+    origin: function (origin, callback) {
+      // Izinkan request tanpa origin (misal: mobile app, curl, atau server-to-server)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      console.warn(`⚠️  CORS blocked: ${origin}`);
-      return callback(new Error(`Not allowed by CORS: ${origin}`));
+      
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      
+      console.warn(`⚠️ CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // Eksplisit izinkan OPTIONS untuk preflight
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],    // Eksplisit izinkan header ini
   })
 );
 
 app.use(express.json());
 
-// Health check (Khusus untuk Vercel)
+// ==========================================
+// 2. HEALTH CHECK (Untuk memastikan Vercel hidup)
+// ==========================================
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -48,12 +60,15 @@ app.get('/', (req, res) => {
       version: '1.0.0',
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
+      corsAllowedOrigins: allowedOrigins, // Berguna untuk debugging
     },
     meta: null,
   });
 });
 
-// Routes
+// ==========================================
+// 3. ROUTES
+// ==========================================
 app.use('/api/products', productRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -65,11 +80,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin/ingredient-catalog', adminIngredientCatalogRoutes);
 app.use('/api/ingredient-catalog', ingredientCatalogRoutes);
 
-// Error handlers
+// ==========================================
+// 4. ERROR HANDLERS
+// ==========================================
 app.use(notFoundHandler);
 app.use(globalErrorHandler);
 
-// JIKA DIJALANKAN DI LOKAL (npm run dev)
+// ==========================================
+// 5. LOCAL SERVER LISTENER
+// ==========================================
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
@@ -78,5 +97,7 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// EKSPOR UNTUK VERCEL
+// ==========================================
+// 6. EKSPOR UNTUK VERCEL (Serverless)
+// ==========================================
 export default app;

@@ -21,7 +21,8 @@
     "import:generated": "tsx src/scripts/import-generated-products.ts",
     "update:concerns": "tsx src/scripts/update-concerns.ts",
     "link:catalog": "tsx src/scripts/link-catalog.ts",
-    "merge:products": "tsx src/scripts/merge-products.ts"
+    "merge:products": "tsx src/scripts/merge-products.ts",
+    "export:products:csv": "tsx src/scripts/export-products-csv.ts"
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
