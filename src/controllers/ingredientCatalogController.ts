@@ -43,11 +43,11 @@ export const getCatalogDetail = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, message: 'Katalog tidak ditemukan' });
     }
 
-    // Ekstrak semua produk unik yang terhubung dengan katalog ini
+    // ✅ PERBAIKAN DI SINI: Menambahkan ': any' agar lolos strict mode Vercel
     const products = catalog.ingredients
-      .flatMap((ing) => ing.productIngredients)
-      .map((pi) => pi.product)
-      .filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i);
+      .flatMap((ing: any) => ing.productIngredients)
+      .map((pi: any) => pi.product)
+      .filter((v: any, i: any, a: any) => a.findIndex((t: any) => t.id === v.id) === i);
 
     res.json({
       success: true,
