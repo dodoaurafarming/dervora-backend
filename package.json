@@ -22,10 +22,9 @@
     "link:catalog": "tsx src/scripts/link-catalog.ts",
     "merge:products": "tsx src/scripts/merge-products.ts"
   },
-  "prisma": {
-    "schema": "prisma/schema.prisma",
-     "seed": "tsx prisma/seed.ts"
-  },
+   "prisma": {
+     "schema": "prisma/schema.prisma"
+   },
   "keywords": [
     "dervora",
     "skincare",
