@@ -61,6 +61,7 @@ model Product {
   ingredients   ProductIngredient[]
   brand         Brand               @relation(fields: [brandId], references: [id])
   category      Category?           @relation(fields: [categoryId], references: [id])
+  routines    Routine[]
 
   @@unique([name, brandId])
   @@index([deletedAt])
@@ -121,11 +122,39 @@ model ProductIngredient {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  firebaseUid String   @unique
-  email       String   @unique
+  id          Int           @id @default(autoincrement())
+  firebaseUid String        @unique
+  email       String        @unique
   name        String?
   photoUrl    String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  // TAMBAHKAN DUA BARIS INI:
+  routines    Routine[]
+  skinProfile SkinProfile?
+}
+
+model Routine {
+     id        Int      @id @default(autoincrement())
+     userId    Int
+     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+     productId Int      
+     product   Product  @relation(fields: [productId], references: [id]) // <-- PASTIKAN BARIS INI ADA
+     slotId    String   
+     timeOfDay String   
+     step      Int      
+     createdAt DateTime @default(now())
+
+     @@unique([userId, slotId, timeOfDay]) 
+}
+
+model SkinProfile {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique 
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skinType    String   
+  concerns    Json     
+  completedAt DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

@@ -12,6 +12,7 @@ import adminIngredientRoutes from './routes/adminIngredientRoutes.js';
 import ingredientCatalogRoutes from './routes/ingredientCatalogRoutes.js';
 import adminIngredientCatalogRoutes from './routes/adminIngredientCatalogRoutes.js';
 import { notFoundHandler, globalErrorHandler } from './middlewares/errorHandler.js';
+import routineRoutes from './routes/routineRoutes.js';
 
 dotenv.config();
 
@@ -79,6 +80,7 @@ app.use('/api/admin/ingredients', adminIngredientRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/ingredient-catalog', adminIngredientCatalogRoutes);
 app.use('/api/ingredient-catalog', ingredientCatalogRoutes);
+app.use('/api/routine', routineRoutes);
 
 // ==========================================
 // 4. ERROR HANDLERS

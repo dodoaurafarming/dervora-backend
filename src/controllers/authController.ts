@@ -1,11 +1,12 @@
 import type { Request, Response, NextFunction } from 'express';
-import { verifyPassword, generateToken, type JWTPayload } from '../lib/auth.js'; // <-- TAMBAHKAN 'type JWTPayload' DI SINI
+import { verifyPassword, generateToken, type JWTPayload } from '../lib/auth.js';
 import { sendSuccess } from '../utils/response.js';
 import { AppError } from '../middlewares/errorHandler.js';
 import type { LoginInput } from '../schemas/auth.schema.js';
+
 /**
  * POST /api/auth/login
- * Verify credentials, return JWT token.
+ * Verify credentials, return JWT token (KHUSUS ADMIN).
  */
 export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
