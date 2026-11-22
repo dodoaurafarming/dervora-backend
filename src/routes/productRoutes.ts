@@ -3,10 +3,12 @@ import * as ctrl from '../controllers/productController.js';
 import { validate } from '../middlewares/validate.js';
 import { authenticate, requireAdmin } from '../middlewares/authenticate.js';
 import { createProductSchema, updateProductSchema } from '../schemas/product.schema.js';
+import { publicCatalogCache } from '../middlewares/cacheControl.js';
 
 const router = Router();
 
 // Public routes (read-only)
+router.use(publicCatalogCache(60, 300, 3600));
 router.get('/', ctrl.listProducts);
 router.get('/:id', ctrl.getProduct);
 

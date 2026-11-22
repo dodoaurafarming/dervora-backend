@@ -2,9 +2,10 @@ import { Router } from 'express';
 import * as ctrl from '../controllers/brandController.js';
 import { validate } from '../middlewares/validate.js';
 import { createBrandSchema, updateBrandSchema } from '../schemas/brand.schema.js';
+import { publicCatalogCache } from '../middlewares/cacheControl.js';
 
 const router = Router();
-
+router.use(publicCatalogCache(60, 300, 3600));
 router.get('/', ctrl.listBrands);
 router.get('/:id', ctrl.getBrand);
 router.post('/', validate(createBrandSchema), ctrl.createBrand);
