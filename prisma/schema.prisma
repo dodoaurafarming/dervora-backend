@@ -151,10 +151,11 @@ model Routine {
 
 model SkinProfile {
   id          Int      @id @default(autoincrement())
-  userId      Int      @unique 
+  userId      Int      @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  skinType    String   
-  concerns    Json     
+  skinType    String
+  concerns    Json
+  answers     Json?
   completedAt DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

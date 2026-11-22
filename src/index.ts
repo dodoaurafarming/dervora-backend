@@ -13,6 +13,7 @@ import ingredientCatalogRoutes from './routes/ingredientCatalogRoutes.js';
 import adminIngredientCatalogRoutes from './routes/adminIngredientCatalogRoutes.js';
 import { notFoundHandler, globalErrorHandler } from './middlewares/errorHandler.js';
 import routineRoutes from './routes/routineRoutes.js';
+import skinProfileRoutes from './routes/skinProfileRoutes.js';
 
 dotenv.config();
 
@@ -74,6 +75,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin/ingredient-catalog', adminIngredientCatalogRoutes);
 app.use('/api/ingredient-catalog', ingredientCatalogRoutes);
 app.use('/api/routine', routineRoutes);
+app.use('/api/skin-profile', skinProfileRoutes);
 
 app.use(notFoundHandler);
 app.use(globalErrorHandler);

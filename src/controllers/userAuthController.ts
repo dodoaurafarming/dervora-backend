@@ -6,7 +6,8 @@ import { AppError } from '../middlewares/errorHandler.js';
 
 /**
  * POST /api/auth/user-login
- * Menerima token Firebase dari frontend, verifikasi, dan simpan user ke DB.
+ * Menerima token Firebase dari frontend, verifikasi, simpan user ke DB,
+ * sekaligus kembalikan skinProfile milik user jika sudah ada.
  */
 export async function loginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -16,11 +17,11 @@ export async function loginUser(req: Request, res: Response, next: NextFunction)
     }
 
     const token = authHeader.split(' ')[1];
-    
+
     // 1. Verifikasi token dengan Firebase Admin
     const decodedToken = await verifyIdToken(token);
 
-    // 2. Simpan atau update user di database (Upsert)
+    // 2. Simpan atau update user di database + tarik skinProfile
     const user = await prisma.user.upsert({
       where: { firebaseUid: decodedToken.uid },
       update: {
@@ -34,9 +35,12 @@ export async function loginUser(req: Request, res: Response, next: NextFunction)
         name: decodedToken.name || 'User',
         photoUrl: decodedToken.picture || null,
       },
+      include: {
+        skinProfile: true,
+      },
     });
 
-    // 3. Kembalikan data user ke frontend
+    // 3. Kembalikan data user & skinProfile ke frontend
     sendSuccess(res, {
       user: {
         id: user.id,
@@ -44,6 +48,16 @@ export async function loginUser(req: Request, res: Response, next: NextFunction)
         name: user.name,
         photoUrl: user.photoUrl,
       },
+      skinProfile: user.skinProfile
+        ? {
+            id: user.skinProfile.id,
+            skinType: user.skinProfile.skinType,
+            concerns: user.skinProfile.concerns,
+            answers: user.skinProfile.answers,
+            completedAt: user.skinProfile.completedAt,
+            updatedAt: user.skinProfile.updatedAt,
+          }
+        : null,
     });
   } catch (err) {
     next(err);
