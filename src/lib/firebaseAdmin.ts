@@ -1,34 +1,31 @@
-import { initializeApp, cert, getApps, App } from 'firebase-admin/app';
+import { initializeApp, cert, getApps, type App, type ServiceAccount } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const loadServiceAccount = (): ServiceAccount => {
+  const rawEnv =
+    process.env.FIREBASE_SERVICE_ACCOUNT_JSON || process.env.FIREBASE_SERVICE_ACCOUNT;
 
-let serviceAccount: any;
+  if (rawEnv) {
+    const parsed = JSON.parse(rawEnv);
+    if (typeof parsed.private_key === 'string') {
+      parsed.private_key = parsed.private_key.replace(/\\n/g, '\n');
+    }
+    return parsed as ServiceAccount;
+  }
 
-if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-  // Production: Baca dari environment variable
-  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-} else {
-  // Development: Baca dari file lokal
-  const serviceAccountPath = path.join(__dirname, '../../firebase-service-account.json');
-  serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-}
+  const serviceAccountPath = path.join(process.cwd(), 'firebase-service-account.json');
+  return JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8')) as ServiceAccount;
+};
 
-// Inisialisasi Firebase Admin
-let app: App;
-if (getApps().length === 0) {
-  app = initializeApp({
-    credential: cert(serviceAccount),
-  });
-} else {
-  app = getApps()[0];
-}
+const app: App =
+  getApps().length === 0
+    ? initializeApp({
+        credential: cert(loadServiceAccount()),
+      })
+    : getApps()[0];
 
-// Inisialisasi Auth instance
 const authInstance = getAuth(app);
 
 export const verifyIdToken = async (token: string) => {
