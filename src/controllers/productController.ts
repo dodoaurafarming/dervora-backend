@@ -6,7 +6,7 @@ import type { CreateProductInput, UpdateProductInput } from '../schemas/product.
 import { deleteImage } from '../lib/cloudinary.js';
 import { parseId } from '../utils/parseId.js';
 
-// Reusable include untuk product (dengan catalog di ingredient)
+// Include lengkap untuk detail 1 product & mutasi admin (termasuk catalog bahan)
 const productInclude = {
   brand: true,
   category: true,
@@ -14,7 +14,23 @@ const productInclude = {
     include: {
       ingredient: {
         include: {
-          catalog: true,    // ← TAMBAHAN: include catalog
+          catalog: true,
+        },
+      },
+    },
+  },
+} as const;
+
+// Include ramping khusus listProducts (tanpa JOIN catalog & teks panjang ingredient)
+const productListInclude = {
+  brand: true,
+  category: true,
+  ingredients: {
+    include: {
+      ingredient: {
+        select: {
+          id: true,
+          name: true,
         },
       },
     },
@@ -25,14 +41,20 @@ export async function listProducts(req: Request, res: Response, next: NextFuncti
   try {
     const page = Math.max(1, parseInt((req.query.page as string) || '1', 10) || 1);
     const limit = Math.min(1000, Math.max(1, parseInt((req.query.limit as string) || '10', 10) || 10));
-    const search = (req.query.search as string) || '';
-    const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
+    const search = ((req.query.search as string) || '').trim();
+    const parsedCategoryId = req.query.categoryId
+      ? parseInt(req.query.categoryId as string, 10)
+      : undefined;
+    const categoryId =
+      parsedCategoryId !== undefined && !Number.isNaN(parsedCategoryId)
+        ? parsedCategoryId
+        : undefined;
     const skip = (page - 1) * limit;
 
     const where = {
       deletedAt: null,
       ...(search && { name: { contains: search } }),
-      ...(categoryId && { categoryId }),
+      ...(categoryId !== undefined && { categoryId }),
     };
 
     const [products, total] = await Promise.all([
@@ -40,7 +62,7 @@ export async function listProducts(req: Request, res: Response, next: NextFuncti
         where,
         skip,
         take: limit,
-        include: productInclude,    // ← pakai reusable include
+        include: productListInclude,
         orderBy: { createdAt: 'desc' },
       }),
       prisma.product.count({ where }),
@@ -62,7 +84,7 @@ export async function getProduct(req: Request, res: Response, next: NextFunction
     const id = parseId(req.params.id);
     const product = await prisma.product.findFirst({
       where: { id, deletedAt: null },
-      include: productInclude,    // ← pakai reusable include
+      include: productInclude,
     });
     if (!product) throw new AppError('NOT_FOUND', 'Product not found', 404);
     sendSuccess(res, product);
@@ -111,7 +133,7 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
           },
         }),
       },
-      include: productInclude,    // ← pakai reusable include
+      include: productInclude,
     });
     sendSuccess(res, product);
   } catch (err) {
@@ -138,7 +160,6 @@ export async function deleteProduct(req: Request, res: Response, next: NextFunct
         console.log(`✅ Deleted image from Cloudinary: ${existing.imagePublicId}`);
       } catch (err) {
         console.warn(`⚠️  Failed to delete image from Cloudinary:`, err);
-        // Jangan throw — soft delete tetap berhasil
       }
     }
 
